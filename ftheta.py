@@ -9,11 +9,11 @@ MU1 = 0.004
 MU2 = 0.016
 GRAV = 9.81
 
-cosAvg = numpy.empty(360)
-sinAvg = numpy.empty(360)
-sin2Avg = numpy.empty(360)
+cosAvg = numpy.empty(180)
+sinAvg = numpy.empty(180)
+sin2Avg = numpy.empty(180)
 
-for CRIT_ANGLE in range (0,360):
+for CRIT_ANGLE in range (180,360):
   cos = numpy.empty(360)
   sin = numpy.empty(360)
   sin2 = numpy.empty(360)
@@ -26,17 +26,26 @@ for CRIT_ANGLE in range (0,360):
   cosAvg[CRIT_ANGLE - 180]  = numpy.mean(cos)
   sinAvg[CRIT_ANGLE - 180]  = numpy.mean(sin)
   sin2Avg[CRIT_ANGLE - 180] = numpy.mean(sin2)
-print(numpy.amax(cosAvg) , numpy.amin(cosAvg)) #this indicates that the output is not exactly a sine wave
-
 
 
 figure, axes = plt.subplots()
-axes.axvline(180, color="black")
-axes.plot(range(0,360), cosAvg, "-r", linewidth=2)
+axes.plot(range(180,360), cosAvg, "-r", linewidth=2)
+axes.set(title="Average of f(ɸ)cos(ɸ) vs Critical Angle", ylabel="<f(ɸ)cos(ɸ)> (Newtons)", xlabel="ɸₒ (degrees)")
 plt.show()
 figure, axes = plt.subplots()
-axes.plot(range(0,360), sinAvg, "-m", linewidth=2)
+axes.set(title="Average of f(ɸ)sin(ɸ) vs Critical Angle", ylabel="<f(ɸ)sin(ɸ)> (Newtons)", xlabel="ɸₒ (degrees)")
+axes.plot(range(180,360), sinAvg, "-m", linewidth=2)
 plt.show()
 figure, axes = plt.subplots()
-axes.plot(range(0,360),sin2Avg, "-g", linewidth=2)
+axes.set(title="Average of f(ɸ)sin²(ɸ) vs Critical Angle", ylabel="<f(ɸ)sin²(ɸ)> (Newtons)", xlabel="ɸₒ (degrees)")
+axes.plot(range(180,360),sin2Avg, "-g", linewidth=2)
 plt.show()
+
+
+#if you want to see all three parameters compared, uncomment this string
+'''figure, axes = plt.subplots()
+axes.legend()
+axes.plot(range(180,360),sin2Avg, "-g", linewidth=2)
+axes.plot(range(180,360), sinAvg, "-m", linewidth=2)
+axes.plot(range(180,360), cosAvg, "-r", linewidth=2)
+plt.show()'''
