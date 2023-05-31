@@ -12,10 +12,6 @@ def fphi(angle, phi0):
 cosAvg = numpy.empty(180)
 sinAvg = numpy.empty(180)
 sin2Avg = numpy.empty(180)
-errAvg = numpy.empty(20)
-
-
-
 
 for CRIT_ANGLE in range (180,360):
     cosAvg[CRIT_ANGLE - 180]  = quad(lambda t: fphi(t, numpy.deg2rad(CRIT_ANGLE))*numpy.cos(t), 0, numpy.deg2rad(CRIT_ANGLE))[0]/(2 * numpy.pi) 
