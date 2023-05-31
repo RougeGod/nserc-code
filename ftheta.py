@@ -1,32 +1,30 @@
-#trying to see what the force-average terms come out to. 
-#does a pass every degree
-
 import numpy
 import matplotlib.pyplot as plt
+from scipy.integrate import quad
 
-
-MU1 = 0.004
-MU2 = 0.016
-GRAV = 9.81
+def fphi(angle, phi0):
+ MU1 = 0.004
+ MU2 = 0.016
+ GRAV = 9.81
+ ROCK_MASS = 19
+ return (GRAV * ROCK_MASS * MU1) if (angle < phi0) else (GRAV * ROCK_MASS * MU2)
 
 cosAvg = numpy.empty(180)
 sinAvg = numpy.empty(180)
 sin2Avg = numpy.empty(180)
+errAvg = numpy.empty(20)
+
+
+
 
 for CRIT_ANGLE in range (180,360):
-  cos = numpy.empty(360)
-  sin = numpy.empty(360)
-  sin2 = numpy.empty(360)
-  
-  for count in range(0,360):
-    ftheta = (GRAV * MU1) if (count >= CRIT_ANGLE) else (GRAV * MU2)
-    cos[count] = ftheta * numpy.cos(count*numpy.pi/180)
-    sin[count] = ftheta * numpy.sin(count*numpy.pi/180)
-    sin2[count] = sin[count] * numpy.sin(count*numpy.pi/180)
-  cosAvg[CRIT_ANGLE - 180]  = numpy.mean(cos)
-  sinAvg[CRIT_ANGLE - 180]  = numpy.mean(sin)
-  sin2Avg[CRIT_ANGLE - 180] = numpy.mean(sin2)
-
+    cosAvg[CRIT_ANGLE - 180]  = quad(lambda t: fphi(t, numpy.deg2rad(CRIT_ANGLE))*numpy.cos(t), 0, numpy.deg2rad(CRIT_ANGLE))[0]/(2 * numpy.pi) 
+    + quad(lambda t: fphi(t, numpy.deg2rad(CRIT_ANGLE))*numpy.cos(t), numpy.deg2rad(CRIT_ANGLE), numpy.pi * 2)[0] / (2 * numpy.pi)
+    sinAvg[CRIT_ANGLE - 180]  = quad(lambda t: fphi(t, numpy.deg2rad(CRIT_ANGLE))*numpy.sin(t), 0, numpy.deg2rad(CRIT_ANGLE))[0]/(2 * numpy.pi) 
+    + quad(lambda t: fphi(t, numpy.deg2rad(CRIT_ANGLE))*numpy.sin(t), numpy.deg2rad(CRIT_ANGLE), numpy.pi * 2)[0] / (2 * numpy.pi)
+    sin2Avg[CRIT_ANGLE - 180] = quad(lambda t: fphi(t, numpy.deg2rad(CRIT_ANGLE))*numpy.sin(t) ** 2, 0, numpy.deg2rad(CRIT_ANGLE))[0]/(2 * numpy.pi) 
+    + quad(lambda t: fphi(t, numpy.deg2rad(CRIT_ANGLE))*numpy.sin(t) ** 2, numpy.deg2rad(CRIT_ANGLE), numpy.pi * 2)[0] / (2 * numpy.pi)
+print(errAvg)
 
 figure, axes = plt.subplots()
 axes.plot(range(180,360), cosAvg, "-r", linewidth=2)
@@ -40,12 +38,3 @@ figure, axes = plt.subplots()
 axes.set(title="Average of f(ɸ)sin²(ɸ) vs Critical Angle", ylabel="<f(ɸ)sin²(ɸ)> (Newtons)", xlabel="ɸₒ (degrees)")
 axes.plot(range(180,360),sin2Avg, "-g", linewidth=2)
 plt.show()
-
-
-#if you want to see all three parameters compared, uncomment this string
-'''figure, axes = plt.subplots()
-axes.legend()
-axes.plot(range(180,360),sin2Avg, "-g", linewidth=2)
-axes.plot(range(180,360), sinAvg, "-m", linewidth=2)
-axes.plot(range(180,360), cosAvg, "-r", linewidth=2)
-plt.show()'''
