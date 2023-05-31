@@ -20,7 +20,6 @@ for CRIT_ANGLE in range (180,360):
     + quad(lambda t: fphi(t, numpy.deg2rad(CRIT_ANGLE))*numpy.sin(t), numpy.deg2rad(CRIT_ANGLE), numpy.pi * 2)[0] / (2 * numpy.pi)
     sin2Avg[CRIT_ANGLE - 180] = quad(lambda t: fphi(t, numpy.deg2rad(CRIT_ANGLE))*numpy.sin(t) ** 2, 0, numpy.deg2rad(CRIT_ANGLE))[0]/(2 * numpy.pi) 
     + quad(lambda t: fphi(t, numpy.deg2rad(CRIT_ANGLE))*numpy.sin(t) ** 2, numpy.deg2rad(CRIT_ANGLE), numpy.pi * 2)[0] / (2 * numpy.pi)
-print(errAvg)
 
 figure, axes = plt.subplots()
 axes.plot(range(180,360), cosAvg, "-r", linewidth=2)
