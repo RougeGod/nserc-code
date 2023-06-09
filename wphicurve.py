@@ -3,6 +3,7 @@ w to phi0. Attempted models include the logistic function, the arctan function,
 and the x/sqrt(x^2 + C) function'''
 import numpy as n 
 from scipy.optimize import curve_fit
+from scipy.optimize import brentq
 
 
 '''
@@ -44,6 +45,7 @@ Parameters are nonsense so no reason to include them
 def logistic(x, A, B, C, D):
     frac = A / (C + n.exp(x - B))
     return D - frac
+
 LOWER_BOUNDS = [-n.infty,-n.infty, 0, -n.infty] # C must be positive to avoid discontinuities in the function
 UPPER_BOUNDS = [n.infty, n.inf, n.inf, n.inf]
 '''
@@ -53,6 +55,7 @@ PHI0 = [180, 180, 185, 206.25, 233, 253.5, 275, 291, 307, 328.5, 338.5, 360]
 
 
 
-bob = curve_fit(sqrtFunc, SPIN_RATE, PHI0, p0=INITIAL_GUESSES)
+#bob = curve_fit(atanFunc, SPIN_RATE, PHI0, p0=INITIAL_GUESSES)
+joe = brentq(lambda a:atanFunc(a,A,B,C,D) - 360 , 0.5, 2, xtol=1e-15, rtol=1e-15)
 
-print(bob[0])
+print(joe)
