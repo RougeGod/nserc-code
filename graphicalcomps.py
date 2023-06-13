@@ -16,10 +16,6 @@ allArrays = json.load(timeFile)
 for both scenarios, atol = rtol = 1e-10 '''
 
 
-#print(max(allArrays[5]))
-#print(max(allArrays[11]))
-#exit()
-
 maxTime = max(max(allArrays[0]),max(allArrays[6]))
 def setupGraphs(paramNum, yLabel, graphTitle):
   figure, axes = plt.subplots()
@@ -31,14 +27,16 @@ def setupGraphs(paramNum, yLabel, graphTitle):
   axes.set(xlim=(0,maxTime), ylim=(minX,maxX), title=graphTitle)
   axes.legend()
   plt.show()
-
+'''
 setupGraphs(1,"x-position(m)", "X-position Evolution")
 setupGraphs(2,"y-position(m)", "Y-position Evolution")
+setupGraphs(3,"x-velocity(m/s)", "X-velocity Evolution")
+setupGraphs(4,"y-velocity(m/s)", "Y-velocity Evolution")
 setupGraphs(5,"omega * R (m/s)","Spin Rate Evolution")
-
+'''
 figure, axes = plt.subplots()
-axes.plot(allArrays[1],allArrays[2],"-c", label="Constant phi0")
-axes.plot(allArrays[7],allArrays[8],"-m", label="Variable phi0")
+axes.plot(allArrays[1],allArrays[2],"-r", label="Normal Friction (unswept)")
+axes.plot(allArrays[7],allArrays[8],"-k", label="Reduced Friction (swept)")
 minX = min(min(allArrays[1]),min(allArrays[7]))
 maxX = max(max(allArrays[1]),max(allArrays[7]))
 minY = min(min(allArrays[2]),min(allArrays[8]))
