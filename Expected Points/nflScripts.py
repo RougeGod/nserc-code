@@ -1,6 +1,6 @@
 import numpy as n
 
-allPlays = open("2012.csv","r",encoding="utf-8")
+allPlays = open("2018.csv","r",encoding="utf-8")
 plays = allPlays.read().splitlines()
 allPlays.close()
 count = 1
@@ -129,7 +129,7 @@ def nextScoreAndDrives():
         plays[count].append(nextScoreArray[count])
         plays[count].append(drivesToNext[count])
     import csv    
-    bob = open("2012Results.csv","w",encoding="utf-8",newline="")
+    bob = open("2018.csv","w",encoding="utf-8",newline="")
     writer = csv.writer(bob)
     writer.writerows(plays)
 nextScoreAndDrives()
