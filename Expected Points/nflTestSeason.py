@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 
 ###CONFIGURATION SETTINGS ###
 WEIGHTING_ENABLED = False
-NEED_NEW_MODEL = False
+NEED_NEW_MODEL = True
 PRODUCE_PLOTS = False
 
 pxp = open("lateDecade.csv","r",encoding="utf-8")
@@ -25,13 +25,13 @@ for line in pxp:
        plays[count][1] = (int(line[5])) #distance to first
        plays[count][2] = int(line[0]) #distance to end zone
        plays[count][3] = int(line[1]) #time remaining in half
-       plays[count][4] = int(plays[count][0] == 4) #is this the last down? FG probabilities were the model's weak point. needs to be changed for CFL
+       sd = (int(line[8]) - int(line[9])) #score differeential
+       plays[count][4] = sd #score differential between teams
        plays[count][5] = int(line[4]) #is it currently goal-to-go?
-       sd = abs(int(line[8]) - int(line[9])) #score differeential (absolute)
        #weight is geo-mean of (0.55 ** number of drives to next score, 1 - differential/27)
        #but weight is set to zero if the differential is >= 27 since those plays don't matter
        if (WEIGHTING_ENABLED): 
-           weights[count] = n.sqrt((0.55 ** (int(line[14]) // 2)) * (1 - sd/MAX_SD)) if (sd < MAX_SD) else 0
+           weights[count] = n.sqrt((0.55 ** (int(line[14]) // 2)) * (1 - abs(sd)/MAX_SD)) if (abs(sd) < MAX_SD) else 0
        scores[count] = int(line[13])#next score type
        count += 1 #if it gets partway through and errors out, this won't trigger so partially written data can be properly overwritten
     except ValueError:
@@ -42,7 +42,7 @@ for line in pxp:
 pxp.close()
 
 if (NEED_NEW_MODEL):
-    lr = LogisticRegression(max_iter=20000, multi_class="multinomial", n_jobs=1).fit(plays,scores, sample_weight=weights)
+    lr = LogisticRegression(max_iter=30000, multi_class="multinomial", n_jobs=1).fit(plays,scores, sample_weight=weights)
     pickle.dump(lr, open("mlmodel.dat","wb"), protocol=4) #opens file and stores the object there
     print("done fitting model!")
 else: 
@@ -64,7 +64,7 @@ def plotProbsandEP(wantPlots):
   TDProb = []
   pointsExpectation = []
   for yardsToEZ in range(1,100):
-      #data fed to predict_proba: down, distance, field position, time in half, is fourth down?,is goal-to-go?
+      #data fed to predict_proba: down, distance, field position, time in half, how much is offense leading by,is goal-to-go?,is 4th down?
       predictions = lr.predict_proba([[1,min(10,yardsToEZ),yardsToEZ,1200,0,int(yardsToEZ <= 10)]])[0]
       oppTDProb.append(predictions[0])
       oppFGProb.append(predictions[1])
@@ -117,9 +117,9 @@ def testOn2018(wantPlots):
           play[1] = int(play[5]) #distance
           play[5] = int(play[4]) #is it goal-to-go? (1/0)
           #must be in this exact order or else it may be overwritten
-          play[4] = int(play[0] == 4) #is it fourth down?
-          play[7] = int(play[13]) #next score. not used for prediction (duh), only for testing
-          plays18[playCount] = play[0:8] 
+          play[4] = int(play[8]) - int(play[9]) #score differential (wrt the team with possession)
+          play[6] = int(play[13]) #next score. not used for prediction (duh), only for testing
+          plays18[playCount] = play[0:7] 
           #will not be written if parsing errored out. total array should be usable though, and elements not relevant to the model are thrown out
           #make it so future uses of the 2018 plays (ie when testing) don't have to re-parse the play text
           predictions = lr.predict_proba([[play[0],play[1],play[2],play[3],play[4],play[5]]])[0] 
